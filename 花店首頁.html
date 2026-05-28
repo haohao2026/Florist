@@ -1,0 +1,1147 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rosery · 花藝選品</title>
+
+<!-- 設計系統 tokens (Rosery) -->
+<link rel="stylesheet" href="tokens.css">
+
+<!-- 中文字型補充 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;600&family=Noto+Sans+TC:wght@300;400;500&display=swap">
+
+<style>
+  /* ============================================================
+     清新光感模式 —— 將 Rosery 夜花園基底翻轉為米白
+     ============================================================ */
+  :root {
+    /* 介面語意覆寫（僅本頁；保留原 token 不動） */
+    --page-bg:     var(--ivory);          /* #F5F0E8 米白 */
+    --page-bg-2:   #FBF7F0;               /* 更亮一檔 */
+    --surface:     #FFFFFF;
+    --ink-text:    var(--ink-deepest);    /* 深綠墨 */
+    --ink-text-2:  var(--moss);           /* 中灰綠 */
+    --ink-text-3:  var(--stem);           /* 淺灰綠 */
+    --line:        rgba(26, 38, 34, 0.12);
+    --line-strong: rgba(26, 38, 34, 0.28);
+    --rose-accent: var(--rose);           /* #8C2530 */
+
+    /* 中英混排字型疊加 */
+    --font-display-cjk: "Playfair Display", "Noto Serif TC", "Songti TC", serif;
+    --font-body-cjk:    "Montserrat", "Noto Sans TC", "PingFang TC", system-ui, sans-serif;
+    --font-italic-cjk:  "Cormorant Garamond", "Noto Serif TC", serif;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--page-bg);
+    color: var(--ink-text);
+    font-family: var(--font-body-cjk);
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: var(--leading-normal);
+  }
+  img { display: block; max-width: 100%; }
+  a { color: inherit; text-decoration: none; transition: opacity var(--dur-1) var(--ease-soft); }
+  a:hover { opacity: 0.55; }
+  button { font: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+  /* 容器 */
+  .container { max-width: 1400px; margin: 0 auto; padding: 0 var(--s-7); }
+  @media (max-width: 720px) { .container { padding: 0 var(--s-5); } }
+
+  /* 共用排版 */
+  .eyebrow {
+    font-family: var(--font-body-cjk);
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: var(--track-widest);
+    text-transform: uppercase;
+    color: var(--ink-text-2);
+  }
+  .display {
+    font-family: var(--font-display-cjk);
+    font-weight: 400;
+    letter-spacing: var(--track-tight);
+    line-height: 1.08;
+    color: var(--ink-text);
+  }
+  .italic-tag {
+    font-family: var(--font-italic-cjk);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--ink-text-2);
+  }
+
+  /* ============================================================
+     Header — 毛玻璃導覽列
+     ============================================================ */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    backdrop-filter: saturate(140%) blur(14px);
+    -webkit-backdrop-filter: saturate(140%) blur(14px);
+    background: rgba(245, 240, 232, 0.72);
+    border-bottom: 1px solid var(--line);
+    transition: background var(--dur-2) var(--ease-soft);
+  }
+  .nav__inner {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    height: 76px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--s-7);
+  }
+  .nav__group { display: flex; gap: var(--s-6); align-items: center; }
+  .nav__group--right { justify-content: flex-end; }
+  .nav__link {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: var(--track-wide);
+    text-transform: uppercase;
+    color: var(--ink-text);
+  }
+  .nav__logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    text-align: center;
+  }
+  .nav__logo .mark {
+    font-family: var(--font-display-cjk);
+    font-weight: 500;
+    font-size: 22px;
+    letter-spacing: 0.32em;
+    padding-left: 0.32em; /* 字距視覺平衡 */
+    color: var(--ink-text);
+  }
+  .nav__logo .tag {
+    font-family: var(--font-italic-cjk);
+    font-style: italic;
+    font-size: 9px;
+    letter-spacing: 0.36em;
+    padding-left: 0.36em;
+    text-transform: uppercase;
+    color: var(--ink-text-2);
+  }
+  .nav__cart {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: var(--track-wide); text-transform: uppercase;
+    position: relative;
+  }
+  .nav__cart-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 18px; height: 18px; padding: 0 5px;
+    background: var(--rose-accent); color: var(--ivory);
+    border-radius: var(--r-full);
+    font-family: var(--font-body-cjk);
+    font-size: 10px; font-weight: 500; letter-spacing: 0;
+    line-height: 1;
+  }
+
+  /* ============================================================
+     Hero — 左文 右大圖
+     ============================================================ */
+  .hero {
+    padding-top: calc(76px + var(--s-9));
+    padding-bottom: var(--s-10);
+  }
+  .hero__grid {
+    display: grid;
+    grid-template-columns: 1fr 1.05fr;
+    gap: var(--s-9);
+    align-items: center;
+  }
+  .hero__text { padding-right: var(--s-6); }
+  .hero__eyebrow { margin-bottom: var(--s-6); display: flex; align-items: center; gap: 14px; }
+  .hero__eyebrow .dot { width: 6px; height: 6px; background: var(--rose-accent); border-radius: 50%; }
+  .hero__title {
+    font-size: clamp(48px, 6.4vw, 96px);
+    margin: 0 0 var(--s-6);
+  }
+  .hero__title .accent {
+    font-family: var(--font-italic-cjk);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--rose-accent);
+  }
+  .hero__lede {
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--ink-text-2);
+    max-width: 460px;
+    margin: 0 0 var(--s-7);
+    font-weight: 300;
+  }
+
+  /* 雙連結 / CTA */
+  .hero__ctas { display: flex; flex-direction: column; gap: var(--s-3); }
+  .hero__link-row {
+    display: inline-flex; align-items: center; gap: 14px;
+    padding: var(--s-4) 0;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    letter-spacing: var(--track-wide);
+    text-transform: uppercase;
+    color: var(--ink-text);
+    transition: padding-left var(--dur-2) var(--ease-soft);
+  }
+  .hero__link-row:last-child { border-bottom: 1px solid var(--line); }
+  .hero__link-row:hover { padding-left: var(--s-3); opacity: 1; }
+  .hero__link-row .num {
+    font-family: var(--font-italic-cjk);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    color: var(--ink-text-3);
+    min-width: 32px;
+  }
+  .hero__link-row .label { flex: 1; }
+  .hero__link-row .arrow { font-size: 16px; letter-spacing: 0; }
+  .hero__link-row.is-accent .label { color: var(--rose-accent); }
+
+  /* Hero image */
+  .hero__media {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--linen);
+  }
+  .hero__media img {
+    width: 100%; height: 100%; object-fit: cover;
+    transform: scale(1.02);
+    transition: transform 1200ms var(--ease-out);
+  }
+  .hero__media:hover img { transform: scale(1.06); }
+  .hero__media-caption {
+    position: absolute; left: var(--s-5); bottom: var(--s-5);
+    color: var(--bone);
+    font-family: var(--font-italic-cjk);
+    font-style: italic;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    mix-blend-mode: difference;
+  }
+  .hero__sidemark {
+    position: absolute;
+    top: 50%; right: -36px;
+    transform: rotate(90deg) translateX(50%);
+    transform-origin: right center;
+    font-family: var(--font-body-cjk);
+    font-size: 10px; letter-spacing: 0.36em;
+    color: var(--ink-text-3);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ============================================================
+     Section header
+     ============================================================ */
+  .section { padding: var(--s-10) 0; }
+  .section--soft { background: var(--page-bg-2); }
+  .section__head {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: end;
+    gap: var(--s-7);
+    margin-bottom: var(--s-9);
+  }
+  .section__title {
+    font-family: var(--font-display-cjk);
+    font-size: clamp(36px, 4.2vw, 56px);
+    font-weight: 400;
+    letter-spacing: var(--track-tight);
+    line-height: 1.1;
+    margin: var(--s-3) 0 0;
+  }
+  .section__meta { color: var(--ink-text-2); font-size: 14px; line-height: 1.7; max-width: 380px; justify-self: end; }
+
+  /* ============================================================
+     Product grid — 3x2
+     ============================================================ */
+  .products {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: var(--s-6);
+    row-gap: var(--s-9);
+  }
+  .product { display: flex; flex-direction: column; cursor: pointer; }
+  .product__media {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--linen);
+    margin-bottom: var(--s-4);
+  }
+  .product__media img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 720ms var(--ease-out);
+  }
+  .product:hover .product__media img { transform: scale(1.06); }
+
+  .product__badge {
+    position: absolute; top: var(--s-3); left: var(--s-3);
+    font-family: var(--font-italic-cjk);
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ivory);
+    background: var(--rose-accent);
+    padding: 4px 10px 5px;
+  }
+
+  .product__add {
+    position: absolute;
+    left: var(--s-3); right: var(--s-3); bottom: var(--s-3);
+    height: 44px;
+    background: var(--ivory);
+    color: var(--ink-text);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: var(--track-wide);
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition:
+      opacity var(--dur-2) var(--ease-soft),
+      transform var(--dur-2) var(--ease-soft),
+      background var(--dur-1) var(--ease-soft);
+  }
+  .product:hover .product__add { opacity: 1; transform: translateY(0); }
+  .product__add:hover { background: var(--ink-text); color: var(--ivory); opacity: 1; }
+  .product__add .plus { font-size: 14px; font-weight: 300; }
+
+  .product__row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: var(--s-3);
+  }
+  .product__name {
+    font-family: var(--font-display-cjk);
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: -0.005em;
+    color: var(--ink-text);
+  }
+  .product__price {
+    font-family: var(--font-body-cjk);
+    font-size: 12px;
+    letter-spacing: var(--track-wide);
+    color: var(--ink-text-2);
+    white-space: nowrap;
+  }
+  .product__desc {
+    font-size: 13px;
+    color: var(--ink-text-3);
+    margin-top: 4px;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+  }
+
+  /* ============================================================
+     Custom form
+     ============================================================ */
+  .custom { padding: var(--s-10) 0; }
+  .custom__inner {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: var(--s-9);
+    align-items: start;
+  }
+  .custom__intro .display {
+    font-size: clamp(36px, 4.2vw, 56px);
+    margin: var(--s-3) 0 var(--s-5);
+  }
+  .custom__intro p {
+    font-size: 15px; line-height: 1.75; color: var(--ink-text-2);
+    max-width: 420px; margin: 0 0 var(--s-6);
+  }
+  .custom__intro .signature {
+    margin-top: var(--s-7);
+    font-family: var(--font-italic-cjk);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ink-text);
+  }
+  .custom__intro .signature small {
+    display: block;
+    font-family: var(--font-body-cjk);
+    font-style: normal;
+    font-size: 11px;
+    letter-spacing: var(--track-wide);
+    text-transform: uppercase;
+    color: var(--ink-text-3);
+    margin-top: 4px;
+  }
+
+  .form {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: var(--s-7);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s-6) var(--s-5);
+  }
+  .form__field { display: flex; flex-direction: column; gap: 8px; }
+  .form__field--full { grid-column: 1 / -1; }
+  .form__label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: var(--track-wide);
+    text-transform: uppercase;
+    color: var(--ink-text-2);
+  }
+  .form__input,
+  .form__select,
+  .form__textarea {
+    appearance: none;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--line-strong);
+    padding: 10px 0 12px;
+    font-family: var(--font-body-cjk);
+    font-size: 15px;
+    color: var(--ink-text);
+    font-weight: 400;
+    transition: border-color var(--dur-1) var(--ease-soft);
+    border-radius: 0;
+  }
+  .form__input:focus,
+  .form__select:focus,
+  .form__textarea:focus {
+    outline: none;
+    border-bottom-color: var(--ink-text);
+  }
+  .form__input::placeholder,
+  .form__textarea::placeholder { color: var(--ink-text-3); font-weight: 300; }
+  .form__select { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%231A2622' stroke-width='1'/></svg>"); background-repeat: no-repeat; background-position: right 4px center; padding-right: 24px; cursor: pointer; }
+  .form__textarea { min-height: 96px; resize: vertical; }
+
+  /* 色系偏好 — 視覺色票選擇 */
+  .palette { display: flex; flex-wrap: wrap; gap: 10px; padding-top: 4px; }
+  .palette__option {
+    position: relative;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform var(--dur-1) var(--ease-soft);
+    border: 1px solid var(--line);
+  }
+  .palette__option input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+  .palette__option .swatch { width: 100%; height: 100%; border-radius: 50%; transition: box-shadow var(--dur-2) var(--ease-soft); }
+  .palette__option:hover .swatch { transform: scale(1.04); }
+  .palette__option input:checked + .swatch {
+    box-shadow: 0 0 0 2px var(--page-bg), 0 0 0 3px var(--ink-text);
+  }
+  .palette__option .name {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-size: 10px;
+    letter-spacing: var(--track-wide);
+    color: var(--ink-text-3);
+    text-transform: uppercase;
+  }
+
+  /* 預算 segmented */
+  .segmented {
+    display: flex;
+    border: 1px solid var(--line-strong);
+  }
+  .segmented label {
+    flex: 1;
+    position: relative;
+    text-align: center;
+    padding: 12px 8px;
+    font-size: 12px;
+    letter-spacing: var(--track-wide);
+    text-transform: uppercase;
+    cursor: pointer;
+    border-right: 1px solid var(--line-strong);
+    transition: background var(--dur-1) var(--ease-soft), color var(--dur-1) var(--ease-soft);
+    color: var(--ink-text-2);
+  }
+  .segmented label:last-child { border-right: none; }
+  .segmented input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+  .segmented label:hover { background: rgba(26,38,34,0.04); }
+  .segmented input:checked + span { color: var(--ivory); }
+  .segmented label:has(input:checked) { background: var(--ink-text); color: var(--ivory); }
+
+  .form__submit {
+    grid-column: 1 / -1;
+    margin-top: var(--s-3);
+    height: 56px;
+    background: var(--ink-text);
+    color: var(--ivory);
+    font-size: 12px;
+    letter-spacing: var(--track-wide);
+    text-transform: uppercase;
+    transition: background var(--dur-2) var(--ease-soft);
+  }
+  .form__submit:hover { background: var(--rose-accent); }
+
+  /* ============================================================
+     Footer
+     ============================================================ */
+  .footer {
+    border-top: 1px solid var(--line);
+    padding: var(--s-9) 0 var(--s-6);
+    background: var(--page-bg);
+  }
+  .footer__grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: var(--s-7);
+    margin-bottom: var(--s-8);
+  }
+  .footer__brand .mark {
+    font-family: var(--font-display-cjk);
+    font-weight: 500;
+    font-size: 22px;
+    letter-spacing: 0.32em;
+    padding-left: 0.32em;
+    color: var(--ink-text);
+  }
+  .footer__brand .blurb {
+    margin-top: var(--s-4);
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--ink-text-2);
+    max-width: 280px;
+  }
+  .footer__col h4 {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: var(--track-wide);
+    text-transform: uppercase;
+    color: var(--ink-text);
+    margin: 0 0 var(--s-4);
+  }
+  .footer__col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .footer__col a { font-size: 13px; color: var(--ink-text-2); }
+
+  .footer__social { display: flex; gap: var(--s-3); margin-top: var(--s-3); }
+  .footer__social a {
+    width: 36px; height: 36px;
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--ink-text);
+    transition: background var(--dur-1) var(--ease-soft), color var(--dur-1) var(--ease-soft);
+  }
+  .footer__social a:hover { background: var(--ink-text); color: var(--ivory); opacity: 1; }
+
+  .footer__base {
+    padding-top: var(--s-5);
+    border-top: 1px solid var(--line);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; letter-spacing: var(--track-wide); text-transform: uppercase;
+    color: var(--ink-text-3);
+  }
+
+  /* ============================================================
+     Cart drawer
+     ============================================================ */
+  .cart-overlay {
+    position: fixed; inset: 0; z-index: 90;
+    background: rgba(19, 28, 25, 0.4);
+    opacity: 0; pointer-events: none;
+    transition: opacity var(--dur-3) var(--ease-soft);
+  }
+  .cart-overlay.is-open { opacity: 1; pointer-events: auto; }
+  .cart {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 100;
+    width: min(440px, 92vw);
+    background: var(--page-bg);
+    border-left: 1px solid var(--line);
+    transform: translateX(100%);
+    transition: transform var(--dur-3) var(--ease-out);
+    display: flex; flex-direction: column;
+  }
+  .cart.is-open { transform: translateX(0); }
+  .cart__head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: var(--s-6) var(--s-6) var(--s-4);
+    border-bottom: 1px solid var(--line);
+  }
+  .cart__title {
+    font-family: var(--font-display-cjk);
+    font-weight: 400;
+    font-size: 24px;
+    letter-spacing: var(--track-snug);
+  }
+  .cart__close {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 1px solid var(--line-strong);
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background var(--dur-1) var(--ease-soft);
+  }
+  .cart__close:hover { background: rgba(26,38,34,0.06); }
+
+  .cart__items { flex: 1; overflow-y: auto; padding: var(--s-5) var(--s-6); }
+  .cart-item {
+    display: grid; grid-template-columns: 72px 1fr auto; gap: var(--s-4);
+    padding: var(--s-4) 0;
+    border-bottom: 1px solid var(--line);
+    align-items: center;
+  }
+  .cart-item:last-child { border-bottom: none; }
+  .cart-item__thumb { width: 72px; aspect-ratio: 4/5; overflow: hidden; background: var(--linen); }
+  .cart-item__thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .cart-item__name { font-family: var(--font-display-cjk); font-size: 17px; }
+  .cart-item__meta { font-size: 12px; color: var(--ink-text-3); margin-top: 4px; letter-spacing: var(--track-wide); text-transform: uppercase; }
+  .cart-item__price { font-size: 13px; letter-spacing: var(--track-wide); }
+  .cart-item__remove {
+    display: block;
+    margin-top: 4px;
+    font-size: 10px;
+    letter-spacing: var(--track-wide);
+    text-transform: uppercase;
+    color: var(--ink-text-3);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .cart-item__remove:hover { color: var(--rose-accent); }
+
+  .cart__empty {
+    padding: var(--s-8) var(--s-6);
+    text-align: center;
+    color: var(--ink-text-3);
+    font-family: var(--font-italic-cjk);
+    font-style: italic;
+    font-size: 16px;
+  }
+  .cart__empty span { display: block; font-style: normal; font-family: var(--font-body-cjk); font-size: 11px; letter-spacing: var(--track-wide); text-transform: uppercase; margin-top: var(--s-3); }
+
+  .cart__foot {
+    padding: var(--s-5) var(--s-6) var(--s-6);
+    border-top: 1px solid var(--line);
+  }
+  .cart__totals {
+    display: flex; justify-content: space-between;
+    font-size: 13px; letter-spacing: var(--track-wide); text-transform: uppercase;
+    color: var(--ink-text-2);
+    margin-bottom: var(--s-2);
+  }
+  .cart__totals--grand {
+    font-family: var(--font-display-cjk);
+    font-size: 22px; text-transform: none; letter-spacing: var(--track-snug);
+    color: var(--ink-text);
+    margin-top: var(--s-4); margin-bottom: var(--s-5);
+  }
+  .cart__checkout {
+    width: 100%;
+    height: 56px;
+    background: var(--ink-text);
+    color: var(--ivory);
+    font-size: 12px;
+    letter-spacing: var(--track-wide);
+    text-transform: uppercase;
+    transition: background var(--dur-2) var(--ease-soft);
+  }
+  .cart__checkout:hover { background: var(--rose-accent); }
+
+  /* ============================================================
+     Toast
+     ============================================================ */
+  .toast {
+    position: fixed; left: 50%; bottom: var(--s-7);
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink-text); color: var(--ivory);
+    padding: 14px 22px;
+    font-size: 12px; letter-spacing: var(--track-wide); text-transform: uppercase;
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--dur-2) var(--ease-soft), transform var(--dur-2) var(--ease-soft);
+  }
+  .toast.is-on { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ============================================================
+     Responsive
+     ============================================================ */
+  @media (max-width: 980px) {
+    .nav__group { display: none; }
+    .nav__group--right { display: flex; }
+    .nav__group--right .nav__link:not(.nav__cart) { display: none; }
+    .hero__grid { grid-template-columns: 1fr; gap: var(--s-7); }
+    .hero__media { aspect-ratio: 4/4.5; }
+    .products { grid-template-columns: repeat(2, 1fr); }
+    .section__head { grid-template-columns: 1fr; }
+    .section__meta { justify-self: start; }
+    .custom__inner { grid-template-columns: 1fr; }
+    .form { grid-template-columns: 1fr; padding: var(--s-5); }
+    .footer__grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    .products { grid-template-columns: 1fr; }
+    .footer__grid { grid-template-columns: 1fr; }
+    .footer__base { flex-direction: column; gap: var(--s-3); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header class="nav">
+  <div class="nav__inner">
+    <nav class="nav__group">
+      <a href="#shop" class="nav__link">花藝選品</a>
+      <a href="#" class="nav__link">關於</a>
+      <a href="#" class="nav__link">婚禮</a>
+    </nav>
+    <a href="#" class="nav__logo">
+      <span class="mark">ROSERY</span>
+      <span class="tag">花房誌 · Est. 1902</span>
+    </a>
+    <div class="nav__group nav__group--right">
+      <a href="#" class="nav__link">花房誌</a>
+      <a href="#" class="nav__link">聯絡我們</a>
+      <button class="nav__link nav__cart" id="cart-toggle" aria-label="購物車">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M3 6h18l-2 12H5L3 6Z"/>
+          <path d="M8 6V4a4 4 0 0 1 8 0v2"/>
+        </svg>
+        購物車
+        <span class="nav__cart-count" id="cart-count">2</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero__grid">
+      <div class="hero__text">
+        <div class="hero__eyebrow eyebrow">
+          <span class="dot"></span>
+          <span>哈德遜河谷 · 1902 年起的花藝</span>
+        </div>
+        <h1 class="hero__title display">
+          一束花<br>
+          一段<span class="accent">細語</span>
+        </h1>
+        <p class="hero__lede">
+          以季節為時序，以田野為靈感。Rosery 為每一個值得被記住的時刻
+          ——生日、紀念日、平凡的星期三——挑選最合宜的花。
+        </p>
+
+        <div class="hero__ctas">
+          <a href="#guide" class="hero__link-row">
+            <span class="num">01 /</span>
+            <span class="label">情境選花指南</span>
+            <span class="arrow">→</span>
+          </a>
+          <a href="#shop" class="hero__link-row is-accent">
+            <span class="num">02 /</span>
+            <span class="label">首次訂購享 9 折 · 限時優惠</span>
+            <span class="arrow">→</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="hero__media">
+        <img src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=1200&q=80"
+             alt="Hero — 花卉靜物"
+             onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg, #EDD6D5 0%, #D9B5B8 40%, #8C2530 100%)';">
+        <span class="hero__media-caption">No. 01 · Garden Roses</span>
+        <span class="hero__sidemark">Spring Edition · MMXXVI</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     PRODUCTS  (3 x 2)
+     ============================================================ -->
+<section class="section section--soft" id="shop">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <div class="eyebrow">本季選品 · SEASONAL EDIT</div>
+        <h2 class="section__title">當季最美的<br>六束花</h2>
+      </div>
+      <p class="section__meta">
+        每週由花藝師於哈德遜河谷的小農園採摘、配搭。
+        每一束限量手作，售完即下檔。
+      </p>
+    </div>
+
+    <div class="products" id="products">
+      <!-- products injected by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CUSTOM FORM
+     ============================================================ -->
+<section class="custom" id="custom">
+  <div class="container">
+    <div class="custom__inner">
+      <div class="custom__intro">
+        <div class="eyebrow">客製訂花 · BESPOKE</div>
+        <h2 class="display">告訴我們<br>那一束花的<span class="italic-tag" style="color: var(--rose-accent);">模樣</span></h2>
+        <p>
+          沒有合適的選品？由我們的首席花藝師依您的故事、預算與色系，
+          量身設計一束專屬的花禮。提交後我們將於 24 小時內聯繫您。
+        </p>
+        <div class="signature">
+          — 由花藝師 Iris 親自配花
+          <small>Hudson Valley · Studio 4</small>
+        </div>
+      </div>
+
+      <form class="form" id="bespoke-form" novalidate>
+        <div class="form__field">
+          <label class="form__label" for="f-name">姓名</label>
+          <input class="form__input" id="f-name" type="text" placeholder="您的稱呼" required>
+        </div>
+        <div class="form__field">
+          <label class="form__label" for="f-contact">聯絡方式</label>
+          <input class="form__input" id="f-contact" type="text" placeholder="電話 / Email" required>
+        </div>
+
+        <div class="form__field form__field--full">
+          <label class="form__label">預算範圍</label>
+          <div class="segmented">
+            <label><input type="radio" name="budget" value="1500"><span>NT$ 1,500</span></label>
+            <label><input type="radio" name="budget" value="3000" checked><span>NT$ 3,000</span></label>
+            <label><input type="radio" name="budget" value="5000"><span>NT$ 5,000</span></label>
+            <label><input type="radio" name="budget" value="8000"><span>NT$ 8,000+</span></label>
+          </div>
+        </div>
+
+        <div class="form__field form__field--full">
+          <label class="form__label" style="margin-bottom: 18px;">色系偏好</label>
+          <div class="palette">
+            <label class="palette__option">
+              <input type="radio" name="palette" value="rose" checked>
+              <span class="swatch" style="background: linear-gradient(135deg, #EDD6D5, #8C2530);"></span>
+              <span class="name">玫瑰紅</span>
+            </label>
+            <label class="palette__option">
+              <input type="radio" name="palette" value="blush">
+              <span class="swatch" style="background: linear-gradient(135deg, #FBF7F0, #D9B5B8);"></span>
+              <span class="name">蜜桃粉</span>
+            </label>
+            <label class="palette__option">
+              <input type="radio" name="palette" value="ivory">
+              <span class="swatch" style="background: linear-gradient(135deg, #FFFFFF, #E8DFD0);"></span>
+              <span class="name">純白</span>
+            </label>
+            <label class="palette__option">
+              <input type="radio" name="palette" value="green">
+              <span class="swatch" style="background: linear-gradient(135deg, #B8C8B5, #3D4E45);"></span>
+              <span class="name">森綠</span>
+            </label>
+            <label class="palette__option">
+              <input type="radio" name="palette" value="lavender">
+              <span class="swatch" style="background: linear-gradient(135deg, #E0D4E6, #6B5B85);"></span>
+              <span class="name">薰衣草</span>
+            </label>
+            <label class="palette__option">
+              <input type="radio" name="palette" value="mixed">
+              <span class="swatch" style="background: conic-gradient(from 0deg, #8C2530, #D9B5B8, #E8DFD0, #7E9387, #6B5B85, #8C2530);"></span>
+              <span class="name">綜合</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form__field">
+          <label class="form__label" for="f-date">期望日期</label>
+          <input class="form__input" id="f-date" type="date">
+        </div>
+        <div class="form__field">
+          <label class="form__label" for="f-occasion">情境</label>
+          <select class="form__select" id="f-occasion">
+            <option>生日</option>
+            <option>週年紀念</option>
+            <option>婚禮 / 求婚</option>
+            <option>道歉 / 致意</option>
+            <option>祝賀開幕</option>
+            <option>其他</option>
+          </select>
+        </div>
+
+        <div class="form__field form__field--full">
+          <label class="form__label" for="f-note">想對她 / 他說的話（選填）</label>
+          <textarea class="form__textarea" id="f-note" placeholder="留下幾句話，我們會為您手寫於小卡上。"></textarea>
+        </div>
+
+        <button type="submit" class="form__submit">送出客製需求 →</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <div class="mark">ROSERY</div>
+        <p class="blurb">
+          A small-batch florist serving the Hudson Valley since 1902.
+          以季節入花，為時刻造景。
+        </p>
+        <div class="footer__social">
+          <a href="#" aria-label="Instagram">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <rect x="3" y="3" width="18" height="18" rx="4"/>
+              <circle cx="12" cy="12" r="4"/>
+              <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none"/>
+            </svg>
+          </a>
+          <a href="#" aria-label="Facebook">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <path d="M16 8h-2a1 1 0 0 0-1 1v2h3l-.5 3H13v7h-3v-7H8v-3h2V9a3 3 0 0 1 3-3h3v2Z"/>
+            </svg>
+          </a>
+          <a href="#" aria-label="Pinterest">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M11 21l2-9M8 12c0-2.5 1.8-5 5-5s4 2 4 4-1.5 4-3.5 4S12 14 12 13"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer__col">
+        <h4>選購</h4>
+        <ul>
+          <li><a href="#">本季花藝</a></li>
+          <li><a href="#">客製訂花</a></li>
+          <li><a href="#">婚禮提案</a></li>
+          <li><a href="#">企業合作</a></li>
+        </ul>
+      </div>
+
+      <div class="footer__col">
+        <h4>關於</h4>
+        <ul>
+          <li><a href="#">品牌故事</a></li>
+          <li><a href="#">花房誌</a></li>
+          <li><a href="#">花藝課程</a></li>
+          <li><a href="#">媒體報導</a></li>
+        </ul>
+      </div>
+
+      <div class="footer__col">
+        <h4>聯絡</h4>
+        <ul>
+          <li><a href="#">台北市大安區青田街 12 巷 8 號</a></li>
+          <li><a href="#">+886 2 2701 1902</a></li>
+          <li><a href="#">hello@rosery.studio</a></li>
+          <li style="margin-top: 8px; color: var(--ink-text-3); font-size: 12px;">週二 — 週日 11:00 – 19:30</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__base">
+      <span>© 2026 Rosery Floral Studio</span>
+      <span>Made in Hudson Valley · Shipped from Taipei</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================
+     CART DRAWER
+     ============================================================ -->
+<div class="cart-overlay" id="cart-overlay"></div>
+<aside class="cart" id="cart" aria-hidden="true">
+  <div class="cart__head">
+    <h3 class="cart__title">您的花籃</h3>
+    <button class="cart__close" id="cart-close" aria-label="關閉購物車">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M6 6l12 12M18 6L6 18"/>
+      </svg>
+    </button>
+  </div>
+  <div class="cart__items" id="cart-items"></div>
+  <div class="cart__foot">
+    <div class="cart__totals"><span>小計</span><span id="cart-subtotal">NT$ 0</span></div>
+    <div class="cart__totals"><span>配送</span><span>另計</span></div>
+    <div class="cart__totals cart__totals--grand"><span>合計</span><span id="cart-total">NT$ 0</span></div>
+    <button class="cart__checkout">前往結帳 →</button>
+  </div>
+</aside>
+
+<div class="toast" id="toast">已加入花籃</div>
+
+<!-- ============================================================
+     SCRIPTS
+     ============================================================ -->
+<script>
+  // --- product data (Unsplash flower stills) ---
+  const PRODUCTS = [
+    { id: 'p1', name: '春朝・粉牡丹', desc: '粉牡丹 · 銀蓮花 · 尤加利',  price: 1880, img: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=900&q=80', tag: 'New' },
+    { id: 'p2', name: '夜遊・絨玫瑰', desc: '深紅大衛奧斯汀玫瑰',       price: 2450, img: 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=900&q=80' },
+    { id: 'p3', name: '田野・野薔薇', desc: '英式庭園混搭 · 季節綠葉',   price: 1680, img: 'https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=900&q=80' },
+    { id: 'p4', name: '初雪・白繡球', desc: '白繡球 · 蝴蝶蘭 · 滿天星',  price: 2280, img: 'https://images.unsplash.com/photo-1494972308805-463bc619d34e?w=900&q=80', tag: 'Bestseller' },
+    { id: 'p5', name: '薄霧・鬱金香', desc: '法式鬱金香十二支',         price: 1280, img: 'https://images.unsplash.com/photo-1469259943454-aa100abba749?w=900&q=80' },
+    { id: 'p6', name: '森居・小綠植', desc: '尤加利 · 蕨類 · 銀葉菊',    price: 980,  img: 'https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=900&q=80' },
+  ];
+
+  // --- cart state ---
+  let cart = [
+    { id: 'p1', qty: 1 },
+    { id: 'p4', qty: 1 },
+  ];
+
+  // --- render products ---
+  const productsEl = document.getElementById('products');
+  productsEl.innerHTML = PRODUCTS.map(p => `
+    <article class="product" data-id="${p.id}">
+      <div class="product__media">
+        <img src="${p.img}" alt="${p.name}" onerror="this.style.display='none'; this.parentNode.style.background='linear-gradient(135deg, #EDD6D5, #8C2530)';">
+        ${p.tag ? `<span class="product__badge">${p.tag}</span>` : ''}
+        <button class="product__add" data-add="${p.id}">
+          <span class="plus">+</span> 加入花籃
+        </button>
+      </div>
+      <div class="product__row">
+        <div class="product__name">${p.name}</div>
+        <div class="product__price">NT$ ${p.price.toLocaleString()}</div>
+      </div>
+      <div class="product__desc">${p.desc}</div>
+    </article>
+  `).join('');
+
+  // --- cart logic ---
+  const cartEl = document.getElementById('cart');
+  const overlayEl = document.getElementById('cart-overlay');
+  const cartItemsEl = document.getElementById('cart-items');
+  const cartCountEl = document.getElementById('cart-count');
+  const subtotalEl = document.getElementById('cart-subtotal');
+  const totalEl = document.getElementById('cart-total');
+
+  function fmt(n) { return 'NT$ ' + n.toLocaleString(); }
+
+  function renderCart() {
+    const items = cart.map(c => {
+      const p = PRODUCTS.find(x => x.id === c.id);
+      return { ...p, qty: c.qty };
+    });
+    const totalQty = items.reduce((s, i) => s + i.qty, 0);
+    const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
+    cartCountEl.textContent = totalQty;
+    cartCountEl.style.display = totalQty > 0 ? 'inline-flex' : 'none';
+    subtotalEl.textContent = fmt(subtotal);
+    totalEl.textContent = fmt(subtotal);
+
+    if (items.length === 0) {
+      cartItemsEl.innerHTML = `
+        <div class="cart__empty">
+          您的花籃還空著
+          <span>SHOP THE SEASONAL EDIT →</span>
+        </div>`;
+      return;
+    }
+
+    cartItemsEl.innerHTML = items.map(i => `
+      <div class="cart-item">
+        <div class="cart-item__thumb"><img src="${i.img}" alt=""></div>
+        <div>
+          <div class="cart-item__name">${i.name}</div>
+          <div class="cart-item__meta">數量 · ${i.qty}</div>
+          <a href="#" class="cart-item__remove" data-remove="${i.id}">移除</a>
+        </div>
+        <div class="cart-item__price">${fmt(i.price * i.qty)}</div>
+      </div>
+    `).join('');
+  }
+
+  function openCart() {
+    cartEl.classList.add('is-open');
+    overlayEl.classList.add('is-open');
+    cartEl.setAttribute('aria-hidden', 'false');
+  }
+  function closeCart() {
+    cartEl.classList.remove('is-open');
+    overlayEl.classList.remove('is-open');
+    cartEl.setAttribute('aria-hidden', 'true');
+  }
+
+  document.getElementById('cart-toggle').addEventListener('click', openCart);
+  document.getElementById('cart-close').addEventListener('click', closeCart);
+  overlayEl.addEventListener('click', closeCart);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeCart();
+  });
+
+  // add to cart
+  productsEl.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-add]');
+    if (!btn) return;
+    e.stopPropagation();
+    const id = btn.getAttribute('data-add');
+    const existing = cart.find(c => c.id === id);
+    if (existing) existing.qty += 1;
+    else cart.push({ id, qty: 1 });
+    renderCart();
+    showToast();
+  });
+
+  // remove
+  cartItemsEl.addEventListener('click', (e) => {
+    const a = e.target.closest('[data-remove]');
+    if (!a) return;
+    e.preventDefault();
+    const id = a.getAttribute('data-remove');
+    cart = cart.filter(c => c.id !== id);
+    renderCart();
+  });
+
+  // toast
+  const toastEl = document.getElementById('toast');
+  let toastT;
+  function showToast(msg) {
+    if (msg) toastEl.textContent = msg;
+    toastEl.classList.add('is-on');
+    clearTimeout(toastT);
+    toastT = setTimeout(() => toastEl.classList.remove('is-on'), 1800);
+  }
+
+  // form
+  document.getElementById('bespoke-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('f-name').value.trim();
+    const contact = document.getElementById('f-contact').value.trim();
+    if (!name || !contact) {
+      showToast('請填寫姓名與聯絡方式');
+      return;
+    }
+    showToast('需求已送出，將於 24 小時內聯繫您 ✿');
+    e.target.reset();
+  });
+
+  // initial render
+  renderCart();
+</script>
+
+</body>
+</html>
